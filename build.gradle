@@ -1,8 +1,17 @@
+//queryDsl 사용추가
+buildscript {
+    ext {
+        queryDslVersion = "5.0.0"
+    }
+}
+
 plugins {
     id 'org.springframework.boot' version '2.7.2'
     id 'io.spring.dependency-management' version '1.0.12.RELEASE'
     id 'java'
     id 'war'
+    //추가 queryDsl
+    //id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 group = 'org.zerock'
@@ -13,6 +22,8 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    //querydsl 추가
+    querydsl.extendsFrom compileClasspath
 }
 
 repositories {
@@ -29,8 +40,24 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // querydsl 추가문
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    annotationProcessor(
+            "javax.persistence:javax.persistence-api",
+            "javax.annotation:javax.annotation-api",
+            "com.querydsl:querydsl-apt:${queryDslVersion}:jpa"
+    )
+
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+//qeurydsl
+sourceSets {
+    main {
+        java {
+            srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated/sources/annotationProcessor/java/main/"]
+        }
+    }
 }
